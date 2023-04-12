@@ -66,19 +66,28 @@ function bumpNpmVersion(newVersion) {
   })
 }
 
+function showUsage(args) {
+  console.error('USAGE: change-version old_version new_version [--verbose] [--dry[-run]]')
+  console.error('Got arguments:', args)
+  process.exit(1)
+}
+
 async function main(args) {
   let [oldVersion, newVersion] = args
 
-  if (!oldVersion || !newVersion || (oldVersion === newVersion)) {
-    console.error('USAGE: bump-version old_version new_version [--verbose] [--dry[-run]]')
-    console.error('Got arguments:', args)
-    process.exit(1)
+  if (!oldVersion || !newVersion) {
+    showUsage(args)
   }
 
-  // Strip any leading `v` from arguments because otherwise we will end up with duplicate `v`s
+  // Strip any leading `v` from arguments because
+  // otherwise we will end up with duplicate `v`s
   [oldVersion, newVersion] = [oldVersion, newVersion].map(arg => {
     return arg.startsWith('v') ? arg.slice(1) : arg
   })
+
+  if (oldVersion === newVersion) {
+    showUsage(args)
+  }
 
   bumpNpmVersion(newVersion)
 
